@@ -1,10 +1,10 @@
 import logging
 import faq_data
 import importlib
+import os # تأكد من استيراد os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 from dotenv import load_dotenv
-import os
 
 # إعدادات البوت
 load_dotenv()
@@ -21,7 +21,7 @@ def get_main_reply_keyboard():
         ["📞 تواصل معنا"]
     ], resize_keyboard=True)
 
-# بناء القوائم الشجرية (تم إزالة زر الدعم منها)
+# بناء القوائم الشجرية
 def build_inline_menu(node, path):
     buttons = []
     if "children" in node:
@@ -30,13 +30,15 @@ def build_inline_menu(node, path):
             
             if "url" in child and child["url"].startswith("http"):
                 buttons.append([InlineKeyboardButton(child["title"], url=child["url"])])
+            # إضافة زر تحميل الملف إذا وجد في البيانات
+            elif "file" in child:
+                buttons.append([InlineKeyboardButton(child["title"], callback_data=f"file:{child['file']}")])
             else:
                 buttons.append([InlineKeyboardButton(child["title"], callback_data=f"info:{new_path}")])
     
     if path != "root":
         buttons.append([InlineKeyboardButton("🔙 العودة للخلف", callback_data=f"path:{path.rsplit('/', 1)[0] if '/' in path else 'root'}")])
     
-    # تم حذف زر التواصل مع الدعم من هنا
     return InlineKeyboardMarkup(buttons)
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -70,27 +72,27 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    
+    # معالجة تحميل الملف
+    if query.data.startswith("file:"):
+        file_name = query.data.split(":")[1]
+        try:
+            await query.message.reply_document(document=open(file_name, 'rb'))
+        except FileNotFoundError:
+            await query.message.reply_text("عذراً، الملف غير موجود حالياً.")
+        return
+
+    # معالجة التنقل
     try:
         importlib.reload(faq_data)
     except Exception as e:
         logging.error(f"فشل تحديث faq_data: {e}")
     
-    # معالجة طلب الدعم (يعمل عند استدعائه من مكان آخر إن وجد)
-    if query.data == "support":
-        await query.message.reply_text(
-            "📞 *تواصل مع قسم الدعم عبر الأرقام التالية:*\n\n"
-            "📱 [0112323014](tel:0112323014)\n"
-            "📱 [0112323036](tel:0112323036)\n"
-            "📱 [0114434085](tel:0114434085)\n"
-            "📱 [0114434086](tel:0114434086)\n\n"
-            "📧 *أو راسلنا عبر البريد الإلكتروني:*\n"
-            "📩 [info@chamaa.com](mailto:info@chamaa.com)",
-            parse_mode="Markdown"
-        )
-        return
-
     # منطق التنقل بين القوائم
-    path = query.data.split(":")[1]
+    data_parts = query.data.split(":")
+    action = data_parts[0]
+    path = data_parts[1]
+    
     node = faq_data.TREE["root"]
     if path != "root":
         for key in path.split("/"):
