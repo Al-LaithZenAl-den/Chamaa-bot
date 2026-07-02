@@ -74,12 +74,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     # معالجة تحميل الملف
+    # معالجة تحميل الملف
     if query.data.startswith("file:"):
         file_name = query.data.split(":")[1]
         try:
-            await query.message.reply_document(document=open(file_name, 'rb'))
-        except FileNotFoundError:
-            await query.message.reply_text("عذراً، الملف غير موجود حالياً.")
+            # نرسل الملف للمستخدم
+            await context.bot.send_document(chat_id=query.message.chat_id, document=open(file_name, 'rb'))
+            await query.answer("تم إرسال الملف!") # إشعار للمستخدم
+        except Exception as e:
+            logging.error(f"خطأ في إرسال الملف: {e}")
+            await query.answer("عذراً، حدث خطأ أثناء إرسال الملف.")
         return
 
     # معالجة التنقل
