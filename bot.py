@@ -45,17 +45,28 @@ def build_inline_menu(node, path):
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("مرحباً بك في شركة الشمعة. استخدم الأزرار للبدء:", reply_markup=get_main_reply_keyboard())
 
+
 async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         importlib.reload(faq_data)
-    except: pass
-    
+    except Exception as e:
+        logging.error(f"فشل تحديث faq_data: {e}")
     text = update.message.text
     if text == "🚀 ابدأ الخدمة":
         node = faq_data.TREE["root"]
         await update.message.reply_text(node["text"], reply_markup=build_inline_menu(node, "root"))
+    
     elif text == "📞 تواصل معنا":
-        await update.message.reply_text("📞 تواصل معنا عبر الأرقام الموضحة في ملف البيانات الخاص بك.", parse_mode="Markdown")
+        await update.message.reply_text(
+            "📞 *تواصل معنا عبر الأرقام التالية:*\n\n"
+            "📱 [011-2323014](tel:0112323014)\n"
+            "📱 [011-2323036](tel:0112323036)\n"
+            "📱 [011-4434085](tel:0114434085)\n"
+            "📱 [011-4434086](tel:0114434086)\n\n"
+            "📧 *أو راسلنا عبر البريد الإلكتروني:*\n"
+            "📩 [info@chamaa.com](mailto:info@chamaa.com)",
+            parse_mode="Markdown"
+        )
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
