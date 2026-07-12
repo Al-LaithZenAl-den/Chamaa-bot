@@ -7,10 +7,13 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 from dotenv import load_dotenv
 
 # إعدادات البوت
+# إعدادات البوت
 load_dotenv()
+# نحاول الحصول على التوكن من إعدادات النظام أولاً، ثم من ملف .env
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
 if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN غير موجود في ملف .env")
+    print("تحذير: لم يتم العثور على BOT_TOKEN في متغيرات النظام.")
 
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", level=logging.INFO)
 
