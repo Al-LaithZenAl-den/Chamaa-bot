@@ -179,45 +179,49 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     data = query.data
+    logging.info(f"[DEBUG] ضغطة زر وصلت، callback_data = {data!r}")
 
-    # إرسال ملف مرفق
-    if data.startswith("file:"):
-        file_name = data.split(":", 1)[1]
-        try:
-            await context.bot.send_document(chat_id=query.message.chat_id, document=open(file_name, "rb"))
-            await query.answer("تم إرسال الملف!")
-        except Exception as e:
-            logging.error(f"خطأ في إرسال الملف: {e}")
-            await query.answer("عذراً، حدث خطأ أثناء إرسال الملف.")
-        return
-
-    # زر "تواصل معنا" العام
-    if data == "general_contact":
-        await query.message.reply_text(COMPANY_CONTACT_TEXT, parse_mode="Markdown")
-        return
-
-    # زر جهة تواصل بدون رقم هاتف مباشر
-    if data.startswith("dept:"):
-        dept_name = data.split(":", 1)[1]
-        await query.message.reply_text(
-            f"للتواصل مع *{dept_name}*، يرجى استخدام أرقام الشركة العامة:\n\n{COMPANY_CONTACT_TEXT}",
-            parse_mode="Markdown"
-        )
-        return
-
-    # التنقل بين العقد
     try:
-        importlib.reload(faq_data)
-    except Exception as e:
-        logging.error(f"فشل تحديث faq_data: {e}")
+        # إرسال ملف مرفق
+        if data.startswith("file:"):
+            file_name = data.split(":", 1)[1]
+            try:
+                await context.bot.send_document(chat_id=query.message.chat_id, document=open(file_name, "rb"))
+                await query.answer("تم إرسال الملف!")
+            except Exception as e:
+                logging.error(f"خطأ في إرسال الملف: {e}")
+                await query.answer("عذراً، حدث خطأ أثناء إرسال الملف.")
+            return
 
-    if data.startswith("path:"):
-        path = data.split(":", 1)[1]
-        node = get_node(path)
-        await query.message.reply_text(
-            build_node_text(node),
-            reply_markup=build_inline_menu(path)
-        )
+        # زر "تواصل معنا" العام
+        if data == "general_contact":
+            await query.message.reply_text(COMPANY_CONTACT_TEXT, parse_mode="Markdown")
+            return
+
+        # زر جهة تواصل بدون رقم هاتف مباشر
+        if data.startswith("dept:"):
+            dept_name = data.split(":", 1)[1]
+            await query.message.reply_text(
+                f"للتواصل مع *{dept_name}*، يرجى استخدام أرقام الشركة العامة:\n\n{COMPANY_CONTACT_TEXT}",
+                parse_mode="Markdown"
+            )
+            return
+
+        # التنقل بين العقد
+        try:
+            importlib.reload(faq_data)
+        except Exception as e:
+            logging.error(f"فشل تحديث faq_data: {e}")
+
+        if data.startswith("path:"):
+            path = data.split(":", 1)[1]
+            node = get_node(path)
+            await query.message.reply_text(
+                build_node_text(node),
+                reply_markup=build_inline_menu(path)
+            )
+    except Exception:
+        logging.exception("[DEBUG] صار خطأ جوا button_handler:")
 
 
 def main():
