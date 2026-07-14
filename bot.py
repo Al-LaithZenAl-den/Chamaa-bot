@@ -61,7 +61,7 @@ def build_inline_menu(path):
         for c in node["contacts"]:
             phone = c.get("phone")
             if phone:
-                buttons.append([InlineKeyboardButton(f"💬 {c['name']} {phone}", url=make_whatsapp_link(phone))])
+                buttons.append([InlineKeyboardButton(f"💬 {c['name']}", url=make_whatsapp_link(phone))])
 
     # أزرار التنقل
     if path != "root":
