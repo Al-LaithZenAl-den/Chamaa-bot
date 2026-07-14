@@ -84,9 +84,10 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(node["text"], reply_markup=build_inline_menu("root"))
     elif text == "📞 تواصل معنا":
         support_keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("💬 التواصل مع الدعم", url=make_whatsapp_link(SUPPORT_PHONE))]
+            [InlineKeyboardButton("👈 اضغط هنا للتواصل الفوري مع الدعم 💬", url=make_whatsapp_link(SUPPORT_PHONE))]
         ])
-        await update.message.reply_text(COMPANY_CONTACT_TEXT, parse_mode="Markdown", reply_markup=support_keyboard)
+        contact_text = COMPANY_CONTACT_TEXT + "\n\n💬 *للرد السريع، تواصل مع فريق الدعم مباشرة عبر واتساب من الزر أدناه 👇*"
+        await update.message.reply_text(contact_text, parse_mode="Markdown", reply_markup=support_keyboard)
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
