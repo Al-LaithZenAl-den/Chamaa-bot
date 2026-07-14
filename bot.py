@@ -47,9 +47,17 @@ def build_inline_menu(path):
         buttons.append([InlineKeyboardButton(child["title"], callback_data=callback)])
 
     # جهات الاتصال الخاصة بالعقدة
+   # جهات الاتصال الخاصة بالعقدة
     if "contacts" in node:
         for c in node["contacts"]:
-            if c.get("phone"): buttons.append([InlineKeyboardButton(f"📞 {c['name']} {c['phone']}", callback_data=f"dept:{c['name']}")])
+            name = c["name"]
+            phone = c.get("phone")
+            if phone:
+                # التعديل: استبدال callback_data بـ url لاستدعاء تطبيق الهاتف
+                buttons.append([InlineKeyboardButton(f"📞 {name} {phone}", url=f"tel:{phone}")])
+            else:
+                # هذا يبقى كما هو للجهات التي ليس لها رقم هاتف مباشر
+                buttons.append([InlineKeyboardButton(f"📞 {name}", callback_data=f"dept:{name}")])
 
     # أزرار التنقل
     if path != "root":
