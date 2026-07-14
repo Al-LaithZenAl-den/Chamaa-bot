@@ -19,18 +19,6 @@ COMPANY_CONTACT_TEXT = (
     "📧 *البريد الإلكتروني:*\n📩 info@chamaa.com"
 )
 
-# دالة مساعدة لتحويل رقم الهاتف إلى رابط tel: صالح
-# (تحول الرقم المحلي مثل 0983918824 إلى +963983918824)
-def make_tel_link(phone: str) -> str:
-    digits = "".join(ch for ch in phone if ch.isdigit() or ch == "+")
-    if digits.startswith("+"):
-        return f"tel:{digits}"
-    if digits.startswith("00"):
-        return f"tel:+{digits[2:]}"
-    if digits.startswith("0"):
-        return f"tel:+963{digits[1:]}"
-    return f"tel:{digits}"
-
 # دالة مساعدة لجلب العقدة
 def get_node(path):
     try:
@@ -61,9 +49,7 @@ def build_inline_menu(path):
     # جهات الاتصال الخاصة بالعقدة
     if "contacts" in node:
         for c in node["contacts"]:
-            phone = c.get("phone")
-            if phone:
-                buttons.append([InlineKeyboardButton(f"📞 {c['name']} {phone}", url=make_tel_link(phone))])
+            if c.get("phone"): buttons.append([InlineKeyboardButton(f"📞 {c['name']} {c['phone']}", callback_data=f"dept:{c['name']}")])
 
     # أزرار التنقل
     if path != "root":
