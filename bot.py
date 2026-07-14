@@ -19,6 +19,16 @@ COMPANY_CONTACT_TEXT = (
     "📧 *البريد الإلكتروني:*\n📩 info@chamaa.com"
 )
 
+# دالة مساعدة لتحويل رقم الهاتف إلى رابط محادثة واتساب صالح
+# (تحول الرقم المحلي مثل 0983918824 إلى https://wa.me/963983918824)
+def make_whatsapp_link(phone: str) -> str:
+    digits = "".join(ch for ch in phone if ch.isdigit())
+    if digits.startswith("00"):
+        digits = digits[2:]
+    elif digits.startswith("0"):
+        digits = "963" + digits[1:]
+    return f"https://wa.me/{digits}"
+
 # دالة مساعدة لجلب العقدة
 def get_node(path):
     try:
@@ -49,7 +59,9 @@ def build_inline_menu(path):
     # جهات الاتصال الخاصة بالعقدة
     if "contacts" in node:
         for c in node["contacts"]:
-            if c.get("phone"): buttons.append([InlineKeyboardButton(f"📞 {c['name']} {c['phone']}", callback_data=f"dept:{c['name']}")])
+            phone = c.get("phone")
+            if phone:
+                buttons.append([InlineKeyboardButton(f"💬 {c['name']} {phone}", url=make_whatsapp_link(phone))])
 
     # أزرار التنقل
     if path != "root":
