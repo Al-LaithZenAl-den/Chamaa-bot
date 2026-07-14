@@ -47,16 +47,17 @@ def build_inline_menu(path):
         buttons.append([InlineKeyboardButton(child["title"], callback_data=callback)])
 
     # جهات الاتصال الخاصة بالعقدة
-    # جهات الاتصال الخاصة بالعقدة (تأكد من استخدام url لفتح الهاتف)
+   # جهات الاتصال الخاصة بالعقدة
     if "contacts" in node:
         for c in node["contacts"]:
             name = c["name"]
             phone = c.get("phone")
             if phone:
-                # هذا السطر هو الذي يفتح تطبيق الهاتف فوراً عند الضغط عليه
+                # هذا هو التعديل الأساسي: استخدم url
                 buttons.append([InlineKeyboardButton(f"📞 {name} {phone}", url=f"tel:{phone}")])
             else:
                 buttons.append([InlineKeyboardButton(f"📞 {name}", callback_data=f"dept:{name}")])
+
     # أزرار التنقل
     if path != "root":
         buttons.append([InlineKeyboardButton("🔙 رجوع", callback_data=f"path:{path.rsplit('/', 1)[0] if '/' in path else 'root'}")])
@@ -81,32 +82,21 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     data = query.data
 
-    # معالجة التنقل بين القوائم
     if data.startswith("path:"):
         path = data.split(":", 1)[1]
         node = get_node(path)
         if node:
-            # إرسال رسالة جديدة دائماً (بدلاً من تعديل الرسالة السابقة)
             await query.message.reply_text(
                 node.get("text", "لا يوجد نص"), 
                 reply_markup=build_inline_menu(path)
             )
-            return
-
-    # معالجة ملفات التحميل
+            
     elif data.startswith("file:"):
         file_name = data.split(":", 1)[1]
         try:
             await context.bot.send_document(chat_id=query.message.chat_id, document=open(file_name, "rb"))
-        except Exception as e:
-            print(f"خطأ في إرسال الملف: {e}")
-            await query.message.reply_text("عذراً، الملف غير موجود حالياً.")
-        return
-
-    # معالجة أزرار الأقسام (في حال كان هناك callback_data إضافي)
-    elif data.startswith("dept:"):
-        dept_name = data.split(":", 1)[1]
-        await query.message.reply_text(f"جاري التواصل مع {dept_name}...")
+        except:
+            await query.message.reply_text("عذراً، الملف غير موجود.")
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
