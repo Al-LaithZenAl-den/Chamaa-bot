@@ -79,7 +79,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         path = data.split(":", 1)[1]
         node = get_node(path)
         if node:
-            await query.message.edit_text(node.get("text", "لا يوجد نص"), reply_markup=build_inline_menu(path))
+            # التعديل هنا: نستخدم reply_text بدل edit_text
+            # هذا سيجعل البوت يرسل رسالة جديدة في الأسفل بدلاً من مسح القديمة
+            await query.message.reply_text(
+                node.get("text", "لا يوجد نص"), 
+                reply_markup=build_inline_menu(path)
+            )
     
     elif data.startswith("file:"):
         file_name = data.split(":", 1)[1]
