@@ -47,16 +47,9 @@ def build_inline_menu(path):
         buttons.append([InlineKeyboardButton(child["title"], callback_data=callback)])
 
     # جهات الاتصال الخاصة بالعقدة
-   # جهات الاتصال الخاصة بالعقدة
     if "contacts" in node:
         for c in node["contacts"]:
-            name = c["name"]
-            phone = c.get("phone")
-            if phone:
-                # هذا هو التعديل الأساسي: استخدم url
-                buttons.append([InlineKeyboardButton(f"📞 {name} {phone}", url=f"tel:{phone}")])
-            else:
-                buttons.append([InlineKeyboardButton(f"📞 {name}", callback_data=f"dept:{name}")])
+            if c.get("phone"): buttons.append([InlineKeyboardButton(f"📞 {c['name']} {c['phone']}", callback_data=f"dept:{c['name']}")])
 
     # أزرار التنقل
     if path != "root":
@@ -86,17 +79,19 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         path = data.split(":", 1)[1]
         node = get_node(path)
         if node:
+            # التعديل هنا: نستخدم reply_text بدل edit_text
+            # هذا سيجعل البوت يرسل رسالة جديدة في الأسفل بدلاً من مسح القديمة
             await query.message.reply_text(
                 node.get("text", "لا يوجد نص"), 
                 reply_markup=build_inline_menu(path)
             )
-            
+    
     elif data.startswith("file:"):
         file_name = data.split(":", 1)[1]
         try:
             await context.bot.send_document(chat_id=query.message.chat_id, document=open(file_name, "rb"))
         except:
-            await query.message.reply_text("عذراً، الملف غير موجود.")
+            await query.message.reply_text("عذراً، الملف غير موجود حالياً.")
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
