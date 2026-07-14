@@ -19,6 +19,9 @@ COMPANY_CONTACT_TEXT = (
     "📧 *البريد الإلكتروني:*\n📩 info@chamaa.com"
 )
 
+# رقم التواصل مع الدعم (يفتح واتساب مباشرة، بدون إظهار الرقم للمستخدم)
+SUPPORT_PHONE = "+963933339739"
+
 # دالة مساعدة لتحويل رقم الهاتف إلى رابط محادثة واتساب صالح
 # (تحول الرقم المحلي مثل 0983918824 إلى https://wa.me/963983918824)
 def make_whatsapp_link(phone: str) -> str:
@@ -80,7 +83,10 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         node = get_node("root")
         await update.message.reply_text(node["text"], reply_markup=build_inline_menu("root"))
     elif text == "📞 تواصل معنا":
-        await update.message.reply_text(COMPANY_CONTACT_TEXT, parse_mode="Markdown")
+        support_keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("💬 التواصل مع الدعم", url=make_whatsapp_link(SUPPORT_PHONE))]
+        ])
+        await update.message.reply_text(COMPANY_CONTACT_TEXT, parse_mode="Markdown", reply_markup=support_keyboard)
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
