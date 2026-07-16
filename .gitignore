@@ -1,1 +1,7 @@
+# لا ترفع هذه الملفات أبداً إلى GitHub
 .env
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.log

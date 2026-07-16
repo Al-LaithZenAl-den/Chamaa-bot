@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 # إعدادات البوت
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+if not BOT_TOKEN:
+    raise RuntimeError(
+        "لم يتم العثور على BOT_TOKEN. تأكد من إضافته كمتغير بيئة (Environment Variable) "
+        "أو داخل ملف .env في نفس مجلد المشروع، ولا تكتبه مباشرة داخل الكود."
+    )
 
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", level=logging.INFO)
 
@@ -18,6 +23,9 @@ COMPANY_CONTACT_TEXT = (
     "📱 011-2323014\n📱 011-2323036\n📱 011-4434085\n📱 011-4434086\n\n"
     "📧 *البريد الإلكتروني:*\n📩 info@chamaa.com"
 )
+
+# مجلد الملفات المسموح بإرسالها فقط (يمنع الوصول لأي ملف آخر على السيرفر)
+FILES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "files")
 
 # رقم التواصل مع الدعم (يفتح واتساب مباشرة، بدون إظهار الرقم للمستخدم)
 SUPPORT_PHONE = "+963933339739"
@@ -106,11 +114,26 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
     
     elif data.startswith("file:"):
-        file_name = data.split(":", 1)[1]
-        try:
-            await context.bot.send_document(chat_id=query.message.chat_id, document=open(file_name, "rb"))
-        except:
+        # نأخذ اسم الملف فقط (بدون أي مسار) لمنع الهروب خارج مجلد الملفات
+        requested_name = os.path.basename(data.split(":", 1)[1])
+        file_path = os.path.join(FILES_DIR, requested_name)
+
+        # تأكيد إضافي: الملف الناتج لازم يكون فعلياً داخل FILES_DIR
+        if not os.path.abspath(file_path).startswith(os.path.abspath(FILES_DIR) + os.sep):
+            logging.warning(f"محاولة وصول مشبوهة لملف خارج المجلد المسموح: {requested_name}")
             await query.message.reply_text("عذراً، الملف غير موجود حالياً.")
+            return
+
+        if not os.path.isfile(file_path):
+            await query.message.reply_text("عذراً، الملف غير موجود حالياً.")
+            return
+
+        try:
+            with open(file_path, "rb") as f:
+                await context.bot.send_document(chat_id=query.message.chat_id, document=f)
+        except Exception as e:
+            logging.error(f"خطأ أثناء إرسال الملف {requested_name}: {e}")
+            await query.message.reply_text("عذراً، حصل خطأ أثناء إرسال الملف.")
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
