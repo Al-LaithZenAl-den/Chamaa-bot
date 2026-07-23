@@ -30,6 +30,9 @@ PERSISTENCE_FILE = os.path.join(BASE_DIR, "bot_persistence.pickle")
 # رقم التواصل مع الدعم (يفتح واتساب مباشرة، بدون إظهار الرقم للمستخدم)
 SUPPORT_PHONE = "+963933339739"
 
+# رابط الموقع الرسمي للشركة
+COMPANY_WEBSITE = "https://ar.chamaa-ip.com/"
+
 # =========================================================
 # نصوص الواجهة الثابتة بلغتين (عربي / إنكليزي)
 # =========================================================
@@ -55,12 +58,16 @@ COMPANY_CONTACT_TEXT = {
     "ar": (
         "📞 *تواصل معنا عبر الأرقام التالية:*\n\n"
         "📱 011-2323014\n📱 011-2323036\n📱 011-4434085\n📱 011-4434086\n\n"
-        "📧 *البريد الإلكتروني:*\n📩 info@chamaa.com"
+        "📧 *البريد الإلكتروني:*\n📩 info@chamaa.com\n\n"
+        "🌐 *موقعنا الرسمي:*\n"
+        f"تفضل بزيارة موقعنا الرسمي عبر الرابط التالي: {COMPANY_WEBSITE}"
     ),
     "en": (
         "📞 *Contact us via the following numbers:*\n\n"
         "📱 011-2323014\n📱 011-2323036\n📱 011-4434085\n📱 011-4434086\n\n"
-        "📧 *Email:*\n📩 info@chamaa.com"
+        "📧 *Email:*\n📩 info@chamaa.com\n\n"
+        "🌐 *Our Website:*\n"
+        f"Please visit our official website via the following link: {COMPANY_WEBSITE}"
     ),
 }
 
@@ -192,7 +199,9 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton(SUPPORT_BTN_TEXT[lang], url=make_whatsapp_link(SUPPORT_PHONE))]
         ])
         contact_text = COMPANY_CONTACT_TEXT[lang] + SUPPORT_NOTE[lang]
-        await update.message.reply_text(contact_text, parse_mode="Markdown", reply_markup=support_keyboard)
+        await update.message.reply_text(
+            contact_text, parse_mode="Markdown", reply_markup=support_keyboard, disable_web_page_preview=True
+        )
         return
 
 
