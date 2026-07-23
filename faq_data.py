@@ -226,7 +226,7 @@ TREE = {
             "commercial_registry": {
                 "title": {
                     "ar": "2. السجلات التجارية (دمشق - ريف دمشق)",
-                    "en": "2. Commercial Registries (Damascus - Rural Damascus)",
+                    "en": "2. Commercial Registries (Damascus, Rural Damascus)",
                 },
                 "staff": "السيد اديب النوري",
                 "text": {
@@ -455,7 +455,7 @@ TREE = {
             "company_formation": {
                 "title": {
                     "ar": "3. تأسيس شركة (دمشق - ريف دمشق)",
-                    "en": "3. Company Formation (Damascus - Rural Damascus)",
+                    "en": "3. Company Formation (Damascus, Rural Damascus)",
                 },
                 "staff": "السيد اديب النوري",
                 "text": {
