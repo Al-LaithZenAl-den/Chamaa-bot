@@ -226,7 +226,7 @@ TREE = {
             "commercial_registry": {
                 "title": {
                     "ar": "2. السجلات التجارية (دمشق - ريف دمشق)",
-                    "en": "2. Commercial Registries (Damascus - Rural Damascus)",
+                    "en": "2. Commercial Registries (Damascus - Damascus Countryside)",
                 },
                 "staff": "السيد اديب النوري",
                 "text": {
@@ -455,7 +455,7 @@ TREE = {
             "company_formation": {
                 "title": {
                     "ar": "3. تأسيس شركة (دمشق - ريف دمشق)",
-                    "en": "3. Company Formation (Damascus - Rural Damascus)",
+                    "en": "3. Company Formation (Damascus - Damascus Countryside)",
                 },
                 "staff": "السيد اديب النوري",
                 "text": {
@@ -805,10 +805,10 @@ TREE = {
             },
 
             # =========================================================
-            # 6) طلبات (السيد وافي)
+            # 6) طلبات مستقلة (السيد وافي)
             # =========================================================
             "independent_requests": {
-                "title": {"ar": "6. طلبات", "en": "6. Applications"},
+                "title": {"ar": "6. طلبات مستقلة", "en": "6. Independent Requests"},
                 "staff": "السيد وافي",
                 "text": {
                     "ar": "ما هو طلبك؟",
@@ -906,7 +906,7 @@ TREE = {
             # 8) الحماية الفكرية (السيد محمد العبد الله)
             # =========================================================
             "intellectual_protection": {
-                "title": {"ar": "8. الحماية الفكرية", "en": "8. Intellectual Property Protection"},
+                "title": {"ar": "8. الحماية الفكرية", "en": "8. Intellectual Protection"},
                 "staff": "السيد محمد العبد الله",
                 "text": {
                     "ar": (
