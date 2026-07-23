@@ -455,7 +455,8 @@ TREE = {
             "company_formation": {
                 "title": {
                     "ar": "3. تأسيس شركة (دمشق - ريف دمشق)",
-                    "en": "3. Company Formation (Damascus, Rural Damascus)",
+                    "en": "3. Company Formation (Damascus,"
+                    " Rural Damascus)",
                 },
                 "staff": "السيد اديب النوري",
                 "text": {
